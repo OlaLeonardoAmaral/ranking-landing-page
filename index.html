@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameRank - O Placar Inteligente da Sua Casa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* * CSS RESET & VARIAVEIS GLOBAIS
+         * Base para um design consistente e customizável.
+         * A paleta de cores foi extraída das imagens de referência,
+         * e a tipografia foi escolhida para um feeling moderno e gamer.
+        */
+        :root {
+            --color-background: #1A1A1A;
+            --color-surface: #2C2C2C;
+            --color-primary: #FACC15; /* Amarelo vibrante */
+            --color-success: #4ADE80;  /* Verde */
+            --color-danger: #F7556E;   /* Vermelho */
+            --color-accent: #818CF8;   /* Azul/Índigo */
+            --color-text: #F1F1F1;
+            --color-text-secondary: #A0A0A0;
+            --color-border: #444444;
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--color-background);
+            color: var(--color-text);
+            font-family: var(--font-family);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            /* * EFEITO DE FUNDO SUTIL
+             * Um gradiente radial que segue o mouse para dar mais vida à página.
+            */
+            background-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(250, 204, 21, 0.05), transparent 30%);
+            transition: background 0.2s ease;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 80px 0;
+        }
+
+        h1, h2, h3 {
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem); /* Tipografia fluida */
+            color: var(--color-primary);
+        }
+
+        h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 60px;
+            text-align: center;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 5px;
+            background-color: var(--color-primary);
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        p {
+            color: var(--color-text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* * ESTILO NEO-BRUTALISTA
+         * Cards com bordas sólidas e sombras duras e deslocadas.
+        */
+        .card {
+            background-color: var(--color-surface);
+            border: 2px solid var(--color-border);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 8px 8px 0px var(--color-background), 10px 10px 0px var(--color-border);
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 12px 12px 0px var(--color-background), 14px 14px 0px var(--card-shadow-color, var(--color-border));
+        }
+        
+        .card-primary {
+            --card-shadow-color: var(--color-primary);
+            border-color: var(--color-primary);
+            box-shadow: 8px 8px 0px var(--color-background), 10px 10px 0px var(--color-primary);
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--color-primary);
+            color: var(--color-background);
+            font-weight: 600;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            border: 2px solid var(--color-background);
+            box-shadow: 4px 4px 0px var(--color-background), 6px 6px 0px var(--color-primary);
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+        }
+
+        .btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--color-background), 8px 8px 0px var(--color-primary);
+        }
+
+        /* ESTRUTURA DAS SEÇÕES */
+        header {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        header .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            margin: 20px 0 40px;
+            max-width: 600px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+        }
+        
+        .feature-card {
+            text-align: center;
+        }
+
+        .feature-card .icon {
+            margin-bottom: 20px;
+            height: 50px;
+            width: 50px;
+            display: inline-block;
+        }
+        
+        .feature-card .icon svg {
+             width: 100%;
+             height: 100%;
+             fill: currentColor;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: currentColor;
+        }
+        
+        /* * CORES DOS CARDS
+         * Aplica as cores da paleta de forma constante para um visual mais vivo.
+        */
+        .card-green {
+            --card-shadow-color: var(--color-success);
+            color: var(--color-success);
+            border-color: var(--color-success);
+            box-shadow: 8px 8px 0px var(--color-background), 10px 10px 0px var(--color-success);
+        }
+        .card-red {
+            --card-shadow-color: var(--color-danger);
+            color: var(--color-danger);
+            border-color: var(--color-danger);
+            box-shadow: 8px 8px 0px var(--color-background), 10px 10px 0px var(--color-danger);
+        }
+        .card-yellow {
+            --card-shadow-color: var(--color-primary);
+            color: var(--color-primary);
+            border-color: var(--color-primary);
+            box-shadow: 8px 8px 0px var(--color-background), 10px 10px 0px var(--color-primary);
+        }
+        .card-blue {
+            --card-shadow-color: var(--color-accent);
+            color: var(--color-accent);
+            border-color: var(--color-accent);
+            box-shadow: 8px 8px 0px var(--color-background), 10px 10px 0px var(--color-accent);
+        }
+        
+        /* EFEITO DE SCROLL-REVEAL */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>GameRank</h1>
+            <p>Transforme cada partida em casa numa competição épica. O placar digital inteligente para seus jogos favoritos.</p>
+            <a href="#o-que-e" class="btn">Descubra Como</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="o-que-e" class="container reveal">
+            <h2>O Fim do "Quem Ganhou Mesmo?"</h2>
+            <div class="card card-primary">
+                <p style="max-width: none; text-align: center; font-size: 1.1rem;">
+                    GameRank é seu placar digital para qualquer jogo. Registre vitórias, suba no ranking e transforme suas noites de jogos em um campeonato divertido e privado.
+                </p>
+            </div>
+        </section>
+
+        <section id="como-funciona" class="container reveal">
+            <h2>Simples como 1, 2, 3... Vitória!</h2>
+            <div class="grid">
+                <div class="card feature-card card-green">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.25,9.25a1,1,0,1,0,1,1,1,1,0,0,0-1-1Zm-2,2a1,1,0,1,0,1,1,1,1,0,0,0-1-1Zm2,2a1,1,0,1,0,1,1,1,1,0,0,0-1-1Zm-12-2.5a.76.76,0,0,1,.75-.75h2.5a.76.76,0,0,1,.75.75v2.5a.76.76,0,0,1-.75.75H6a.76.76,0,0,1-.75-.75Zm2.5-3.25H6a.76.76,0,0,0-.75.75v2.5a.75.75,0,0,0,1.5,0V7.5h1.25a.75.75,0,0,0,0-1.5ZM21,6.81V17.19a3,3,0,0,1-3,3H6a3,3,0,0,1-3-3V6.81a3,3,0,0,1,3-3H18A3,3,0,0,1,21,6.81ZM19.5,6.81a1.5,1.5,0,0,0-1.5-1.5H6A1.5,1.5,0,0,0,4.5,6.81V17.19a1.5,1.5,0,0,0,1.5,1.5H18a1.5,1.5,0,0,0,1.5-1.5Z"/></svg>
+                    </div>
+                    <h3>1. Registre a Partida</h3>
+                    <p>Fim de jogo? Anote o placar em segundos. Simples, rápido e de qualquer celular.</p>
+                </div>
+                <div class="card feature-card card-red">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20,21H4a1,1,0,0,1-1-1V4A1,1,0,0,1,4,3H20a1,1,0,0,1,1,1V20A1,1,0,0,1,20,21ZM5,19H19V5H5ZM8,17V14a1,1,0,0,1,2,0v3a1,1,0,0,1-2,0Zm4,0V11a1,1,0,0,1,2,0v6a1,1,0,0,1-2,0Zm4,0V8a1,1,0,0,1,2,0v9a1,1,0,0,1-2,0Z"/></svg>
+                    </div>
+                    <h3>2. A Mágica Acontece</h3>
+                    <p>O sistema calcula os pontos e atualiza o ranking na hora. A mágica é automática, sem planilhas.</p>
+                </div>
+                <div class="card feature-card card-yellow">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.5,2H4.5A2.5,2.5,0,0,0,2,4.5V10a2.48,2.48,0,0,0,1,.2,4.74,4.74,0,0,1,3.8,3.6,4.74,4.74,0,0,1,3.8-3.6,4.74,4.74,0,0,1,3.8,3.6,4.74,4.74,0,0,1,3.8-3.6A2.48,2.48,0,0,0,22,10V4.5A2.5,2.5,0,0,0,19.5,2Zm-14,7a2.76,2.76,0,0,0-1.5.5V4.5a1,1,0,0,1,1-1h1V9A2.76,2.76,0,0,0,5.5,9Zm13-4.5a1,1,0,0,1,1,1V9.5a2.76,2.76,0,0,0-1.5-.5V3.5h1ZM12,15.8a3.24,3.24,0,0,0-3.3,3.2H8.5V21a1,1,0,0,0,1,1h5a1,1,0,0,0,1-1V19h-1.2A3.24,3.24,0,0,0,12,15.8Z"/></svg>
+                    </div>
+                    <h3>3. Veja os Resultados</h3>
+                    <p>Confira o ranking a qualquer hora e veja quem é o campeão. A disputa fica mais divertida!</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="por-que" class="container reveal">
+            <h2>Mais que um Placar, uma Experiência</h2>
+            <div class="grid">
+                <div class="card card-yellow">
+                    <h3>Gamificação Real</h3>
+                    <p>Leve seus jogos a outro nível. Crie rivalidades saudáveis e a motivação para jogar sempre mais.</p>
+                </div>
+                <div class="card card-green">
+                    <h3>Memórias Digitais</h3>
+                    <p>Cada partida vira uma memória guardada. Relembre os momentos épicos e seu histórico de vitórias.</p>
+                </div>
+                <div class="card card-red">
+                    <h3>100% Privado e Seu</h3>
+                    <p>Totalmente privado e seguro. Seus dados de jogos ficam apenas com você, na sua casa.</p>
+                </div>
+                <div class="card card-blue">
+                    <h3>Para Qualquer Jogo</h3>
+                    <p>Funciona com tudo! De tabuleiro a videogame, se tem um vencedor, tem ranking.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="cta" class="container reveal" style="text-align: center;">
+             <h2>Pronto para Começar a Competição?</h2>
+             <p style="max-width: 500px; margin-left: auto; margin-right: auto;">O GameRank está em desenvolvimento. Fique por dentro das novidades e seja o primeiro a transformar seus jogos.</p>
+             <a href="#" class="btn">Quero Saber Mais!</a>
+        </section>
+    </main>
+    
+    <footer style="text-align: center; padding: 40px 0; color: var(--color-text-secondary);">
+        <p>&copy; 2025 GameRank. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        /**
+         * LÓGICA DE MICRO-INTERAÇÃO: SCROLL REVEAL
+         */
+        function revealSections() {
+            const reveals = document.querySelectorAll('.reveal');
+            for (let i = 0; i < reveals.length; i++) {
+                const windowHeight = window.innerHeight;
+                const elementTop = reveals[i].getBoundingClientRect().top;
+                const elementVisible = 150;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add('visible');
+                }
+            }
+        }
+        window.addEventListener('scroll', revealSections);
+        revealSections();
+
+        /**
+         * LÓGICA DE MICRO-INTERAÇÃO: GRADIENTE DE FUNDO
+         */
+        document.addEventListener('mousemove', e => {
+            document.body.style.setProperty('--x', `${e.clientX}px`);
+            document.body.style.setProperty('--y', `${e.clientY}px`);
+        });
+    </script>
+
+</body>
+</html>
+
